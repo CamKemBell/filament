@@ -15,18 +15,22 @@
     $actionModalIcon = $action->getModalIcon();
     $actionModalIconColor = $action->getModalIconColor();
     $actionModalId = "fi-{$this->getId()}-action-{$action->getNestingIndex()}";
+    $actionModalCloseButtonCanCancelParentActions = $action->shouldModalCloseButtonCancelParentActions();
+    $actionModalCloseButtonParentActionToCancelTo = $action->getModalCloseButtonParentActionToCancelTo();
     $actionIsModalSlideOver = $action->isModalSlideOver();
     $actionIsModalFooterSticky = $action->isModalFooterSticky();
     $actionIsModalHeaderSticky = $action->isModalHeaderSticky();
     $actionModalWidth = $action->getModalWidth();
     $actionLivewireCallMountedActionName = $action->hasFormWrapper() ? $action->getLivewireCallMountedActionName() : null;
     $actionModalWireKey = "{$this->getId()}.actions.{$action->getName()}.modal";
+    $actionModalCloseButtonEventHandler = 'closeQuietly(); $wire.unmountAction(' . \Illuminate\Support\Js::from($actionModalCloseButtonCanCancelParentActions) . ', ' . \Illuminate\Support\Js::from($actionModalCloseButtonParentActionToCancelTo) . ')';
 @endphp
 
 <x-filament::modal
     :alignment="$actionModalAlignment"
     :autofocus="$actionIsModalAutofocused"
     :close-button="$actionHasModalCloseButton"
+    :close-button-event-handler="$actionModalCloseButtonEventHandler"
     :close-by-clicking-away="$actionIsModalClosedByClickingAway"
     :close-by-escaping="$actionIsModalClosedByEscaping"
     :description="$actionModalDescription"
