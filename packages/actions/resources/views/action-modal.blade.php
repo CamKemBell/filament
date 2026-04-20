@@ -23,7 +23,8 @@
     $actionModalWidth = $action->getModalWidth();
     $actionLivewireCallMountedActionName = $action->hasFormWrapper() ? $action->getLivewireCallMountedActionName() : null;
     $actionModalWireKey = "{$this->getId()}.actions.{$action->getName()}.modal";
-    $actionModalCloseButtonEventHandler = 'closeQuietly(); $wire.unmountAction(' . \Illuminate\Support\Js::from($actionModalCloseButtonCanCancelParentActions) . ', ' . \Illuminate\Support\Js::from($actionModalCloseButtonParentActionToCancelTo) . ')';
+    $cancelParentActionsArg = $actionModalCloseButtonParentActionToCancelTo ?? ($actionModalCloseButtonCanCancelParentActions ? true : null);
+    $actionModalCloseButtonEventHandler = 'closeQuietly(); $wire.unmountActionFromModalCloseButton(' . \Illuminate\Support\Js::from($cancelParentActionsArg) . ')';
 @endphp
 
 <x-filament::modal

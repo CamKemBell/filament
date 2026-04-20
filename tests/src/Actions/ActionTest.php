@@ -258,7 +258,7 @@ describe('nested actions', function (): void {
                 TestAction::make('parentWithModalCloseButtonCancellation')->schemaComponent('grandparentValue'),
                 TestAction::make('closeButtonCancelsAllParentActions')->schemaComponent('parentValue'),
             ])
-            ->unmountAction(true, true)
+            ->call('unmountActionFromModalCloseButton', true)
             ->assertActionNotMounted();
     });
 
@@ -269,7 +269,7 @@ describe('nested actions', function (): void {
                 TestAction::make('parentWithModalCloseButtonCancellation')->schemaComponent('grandparentValue'),
                 TestAction::make('closeButtonCancelsToNamedParentAction')->schemaComponent('parentValue'),
             ])
-            ->unmountAction(true, 'parentWithModalCloseButtonCancellation')
+            ->call('unmountActionFromModalCloseButton', 'parentWithModalCloseButtonCancellation')
             ->assertActionMounted('grandparentWithModalCloseButtonCancellation');
     });
 
@@ -280,7 +280,7 @@ describe('nested actions', function (): void {
                 TestAction::make('parentWithModalCloseButtonCancellation')->schemaComponent('grandparentValue'),
                 TestAction::make('closeButtonCancelsAllParentActions')->schemaComponent('parentValue'),
             ])
-            ->assertSeeHtml('closeQuietly(); $wire.unmountAction(true, true)');
+            ->assertSeeHtml('closeQuietly(); $wire.unmountActionFromModalCloseButton(true)');
     });
 
     it('can mount a nested action with parent arguments', function (): void {

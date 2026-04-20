@@ -723,7 +723,7 @@ trait InteractsWithActions
         return null;
     }
 
-    public function unmountAction(bool $canCancelParentActions = true, bool | string | null $cancelParentActions = null): void
+    public function unmountAction(bool $canCancelParentActions = true): void
     {
         try {
             $action = $this->getMountedAction();
@@ -731,23 +731,40 @@ trait InteractsWithActions
             $action = null;
         }
 
-        if (! ($canCancelParentActions && $action)) {
-            array_pop($this->mountedActions);
-        } else {
-            if (func_num_args() < 2) {
-                $cancelParentActions = $action->shouldCancelAllParentActions() ? true : $action->getParentActionToCancelTo();
-            }
+        $cancelParentActions = null;
 
-            if ($cancelParentActions === true) {
-                $this->mountedActions = [];
-            } else {
-                do {
-                    $recentlyClosedParentAction = array_pop($this->mountedActions);
-                } while (
-                    filled($cancelParentActions) &&
-                    is_array($recentlyClosedParentAction) &&
-                    ($recentlyClosedParentAction['name'] !== $cancelParentActions)
-                );
+        if ($canCancelParentActions && $action) {
+            $cancelParentActions = $action->shouldCancelAllParentActions() ? true : $action->getParentActionToCancelTo();
+        }
+
+        $this->popMountedAction($action, $cancelParentActions);
+    }
+
+    public function unmountActionFromModalCloseButton(bool | string | null $cancelParentActions = null): void
+    {
+        try {
+            $action = $this->getMountedAction();
+        } catch (ActionNotResolvableException $exception) {
+            $action = null;
+        }
+
+        $this->popMountedAction($action, $cancelParentActions);
+    }
+
+    protected function popMountedAction(?Action $action, bool | string | null $cancelParentActions = null): void
+    {
+        if ($cancelParentActions === true) {
+            $this->mountedActions = [];
+        } else {
+            $recentlyClosedParentAction = array_pop($this->mountedActions);
+
+            while (
+                ! empty($this->mountedActions) &&
+                filled($cancelParentActions) &&
+                is_array($recentlyClosedParentAction) &&
+                ($recentlyClosedParentAction['name'] !== $cancelParentActions)
+            ) {
+                $recentlyClosedParentAction = array_pop($this->mountedActions);
             }
         }
 

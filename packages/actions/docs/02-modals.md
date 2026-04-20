@@ -743,24 +743,30 @@ If closing the modal with the close button should also cancel parent actions, yo
 
 ```php
 use Filament\Actions\Action;
+use Filament\Forms\Components\TextInput;
 
 Action::make('createPost')
     ->schema([
-        // ...
+        TextInput::make('title')
+            ->required()
+            ->registerActions([
+                Action::make('confirmCreation')
+                    ->requiresConfirmation()
+                    ->modalCloseButton(cancelParentActions: true)
+                    ->action(function (): void {
+                        // ...
+                    }),
+                Action::make('editPostMetadata')
+                    ->requiresConfirmation()
+                    ->modalCloseButton(cancelParentActions: 'createPost')
+                    ->action(function (): void {
+                        // ...
+                    }),
+            ]),
     ])
     ->action(function (array $data): void {
         // ...
     })
-    ->modalCloseButton(cancelParentActions: true)
-
-Action::make('editPost')
-    ->schema([
-        // ...
-    ])
-    ->action(function (array $data): void {
-        // ...
-    })
-    ->modalCloseButton(cancelParentActions: 'createPost')
 ```
 
 If you'd like to hide the close button for all modals in the application, you can do so by calling `ModalComponent::closeButton(false)` inside a service provider or middleware:
