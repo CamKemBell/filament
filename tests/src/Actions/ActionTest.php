@@ -464,14 +464,15 @@ describe('properties', function (): void {
             ->modalCloseButton(cancelParentActions: true);
 
         expect($action->hasModalCloseButton())->toBeTrue();
+        expect($action->shouldModalCloseButtonCancelParentActions())->toBeTrue();
         expect($action->shouldCancelAllParentActions())->toBeTrue();
-        expect($action->getParentActionToCancelTo())->toBe('1');
     });
 
     it('can use `modalCloseButton()` to cancel parent actions to a named action', function (): void {
         $action = Action::make('test')
             ->modalCloseButton(cancelParentActions: 'parentAction');
 
+        expect($action->shouldModalCloseButtonCancelParentActions())->toBeTrue();
         expect($action->shouldCancelAllParentActions())->toBeFalse();
         expect($action->getParentActionToCancelTo())->toBe('parentAction');
     });
