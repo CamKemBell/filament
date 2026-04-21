@@ -1,6 +1,7 @@
 @php
     use Filament\Actions\View\ActionsRenderHook;
     use Filament\Support\Facades\FilamentView;
+    use Illuminate\Support\Js;
 
     $actionModalAlignment = $action->getModalAlignment();
     $actionIsModalAutofocused = $action->isModalAutofocused();
@@ -15,16 +16,15 @@
     $actionModalIcon = $action->getModalIcon();
     $actionModalIconColor = $action->getModalIconColor();
     $actionModalId = "fi-{$this->getId()}-action-{$action->getNestingIndex()}";
-    $actionModalCloseButtonCanCancelParentActions = $action->shouldModalCloseButtonCancelParentActions();
-    $actionModalCloseButtonParentActionToCancelTo = $action->getModalCloseButtonParentActionToCancelTo();
     $actionIsModalSlideOver = $action->isModalSlideOver();
     $actionIsModalFooterSticky = $action->isModalFooterSticky();
     $actionIsModalHeaderSticky = $action->isModalHeaderSticky();
     $actionModalWidth = $action->getModalWidth();
     $actionLivewireCallMountedActionName = $action->hasFormWrapper() ? $action->getLivewireCallMountedActionName() : null;
     $actionModalWireKey = "{$this->getId()}.actions.{$action->getName()}.modal";
-    $cancelParentActionsArg = $actionModalCloseButtonParentActionToCancelTo ?? ($actionModalCloseButtonCanCancelParentActions ? true : null);
-    $actionModalCloseButtonEventHandler = 'closeQuietly(); $wire.unmountActionFromModalCloseButton(' . \Illuminate\Support\Js::from($cancelParentActionsArg) . ')';
+    $actionModalCloseButtonEventHandler = $action->shouldModalCloseButtonCancelParentActions()
+        ? 'closeQuietly(); $wire.unmountAction(true)'
+        : null;
 @endphp
 
 <x-filament::modal
@@ -48,7 +48,7 @@
     :width="$actionModalWidth"
     :wire:key="$actionModalWireKey"
     :wire:submit.prevent="$actionLivewireCallMountedActionName"
-    :x-on:modal-closed="'if ($event.detail.id === ' . \Illuminate\Support\Js::from($actionModalId) . ') $wire.unmountAction(false)'"
+    :x-on:modal-closed="'if ($event.detail.id === ' . Js::from($actionModalId) . ') $wire.unmountAction(false)'"
 >
     {{ FilamentView::renderHook(ActionsRenderHook::MODAL_CUSTOM_CONTENT_BEFORE, scopes: static::class, data: ['action' => $action]) }}
 
