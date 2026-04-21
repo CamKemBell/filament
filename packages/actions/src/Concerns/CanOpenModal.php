@@ -135,6 +135,10 @@ trait CanOpenModal
         $this->hasModalCloseButton = $condition;
         $this->modalCloseButtonCancelsParentActions = $cancelParentActions;
 
+        if ($cancelParentActions !== null) {
+            $this->cancelParentActions($cancelParentActions);
+        }
+
         return $this;
     }
 
@@ -693,14 +697,7 @@ trait CanOpenModal
     {
         $cancelParentActions = $this->evaluate($this->modalCloseButtonCancelsParentActions);
 
-        return ($cancelParentActions === true) || filled($cancelParentActions);
-    }
-
-    public function getModalCloseButtonParentActionToCancelTo(): ?string
-    {
-        $cancelParentActions = $this->evaluate($this->modalCloseButtonCancelsParentActions);
-
-        return is_string($cancelParentActions) ? $cancelParentActions : null;
+        return filled($cancelParentActions);
     }
 
     public function isModalClosedByClickingAway(): bool
