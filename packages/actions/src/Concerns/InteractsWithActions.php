@@ -731,40 +731,22 @@ trait InteractsWithActions
             $action = null;
         }
 
-        $cancelParentActions = null;
-
-        if ($canCancelParentActions && $action) {
-            $cancelParentActions = $action->shouldCancelAllParentActions() ? true : $action->getParentActionToCancelTo();
-        }
-
-        $this->popMountedAction($action, $cancelParentActions);
-    }
-
-    public function unmountActionFromModalCloseButton(bool | string | null $cancelParentActions = null): void
-    {
-        try {
-            $action = $this->getMountedAction();
-        } catch (ActionNotResolvableException $exception) {
-            $action = null;
-        }
-
-        $this->popMountedAction($action, $cancelParentActions);
-    }
-
-    protected function popMountedAction(?Action $action, bool | string | null $cancelParentActions = null): void
-    {
-        if ($cancelParentActions === true) {
+        if (! ($canCancelParentActions && $action)) {
+            array_pop($this->mountedActions);
+        } elseif ($action->shouldCancelAllParentActions()) {
             $this->mountedActions = [];
         } else {
-            $recentlyClosedParentAction = array_pop($this->mountedActions);
+            $parentActionToCancelTo = $action->getParentActionToCancelTo();
 
-            while (
-                ! empty($this->mountedActions) &&
-                filled($cancelParentActions) &&
-                is_array($recentlyClosedParentAction) &&
-                ($recentlyClosedParentAction['name'] !== $cancelParentActions)
-            ) {
+            while (true) {
                 $recentlyClosedParentAction = array_pop($this->mountedActions);
+
+                if (
+                    blank($parentActionToCancelTo) ||
+                    ($recentlyClosedParentAction['name'] === $parentActionToCancelTo)
+                ) {
+                    break;
+                }
             }
         }
 
