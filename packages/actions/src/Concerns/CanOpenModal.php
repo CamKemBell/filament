@@ -85,7 +85,7 @@ trait CanOpenModal
 
     protected bool | Closure | null $hasModalCloseButton = null;
 
-    protected bool | string | Closure | null $modalCloseButtonCancelsParentActions = null;
+    protected bool | string | Closure | null $modalDismissesParentActions = null;
 
     protected bool | Closure | null $isModalClosedByClickingAway = null;
 
@@ -133,14 +133,23 @@ trait CanOpenModal
         return $this;
     }
 
+    /**
+     * @deprecated Use `modalDismissesParentActions()` instead of the `$cancelParentActions` argument.
+     */
     public function modalCloseButton(bool | Closure | null $condition = true, bool | string | Closure | null $cancelParentActions = null): static
     {
         $this->hasModalCloseButton = $condition;
-        $this->modalCloseButtonCancelsParentActions = $cancelParentActions;
 
         if ($cancelParentActions !== null) {
-            $this->cancelParentActions($cancelParentActions);
+            $this->modalDismissesParentActions($cancelParentActions);
         }
+
+        return $this;
+    }
+
+    public function modalDismissesParentActions(bool | string | Closure | null $toAction = true): static
+    {
+        $this->modalDismissesParentActions = $toAction;
 
         return $this;
     }
@@ -708,11 +717,23 @@ trait CanOpenModal
         return $this->evaluate($this->hasModalCloseButton) ?? ModalComponent::$hasCloseButton;
     }
 
-    public function shouldModalCloseButtonCancelParentActions(): bool
+    public function shouldModalDismissParentActions(): bool
     {
-        $cancelParentActions = $this->evaluate($this->modalCloseButtonCancelsParentActions);
+        $cancelParentActions = $this->evaluate($this->modalDismissesParentActions);
 
         return filled($cancelParentActions);
+    }
+
+    public function shouldModalDismissAllParentActions(): bool
+    {
+        return $this->evaluate($this->modalDismissesParentActions) === true;
+    }
+
+    public function getParentActionToCancelToWhenModalIsDismissed(): ?string
+    {
+        $cancelParentActions = $this->evaluate($this->modalDismissesParentActions);
+
+        return is_string($cancelParentActions) ? $cancelParentActions : null;
     }
 
     public function isModalClosedByClickingAway(): bool

@@ -723,7 +723,7 @@ trait InteractsWithActions
         return null;
     }
 
-    public function unmountAction(bool $canCancelParentActions = true): void
+    public function unmountAction(bool $canCancelParentActions = true, bool | string | null $parentActionsToCancel = null): void
     {
         try {
             $action = $this->getMountedAction();
@@ -733,10 +733,15 @@ trait InteractsWithActions
 
         if (! ($canCancelParentActions && $action)) {
             array_pop($this->mountedActions);
-        } elseif ($action->shouldCancelAllParentActions()) {
+        } elseif (
+            ($parentActionsToCancel === true) ||
+            (($parentActionsToCancel === null) && $action->shouldCancelAllParentActions())
+        ) {
             $this->mountedActions = [];
         } else {
-            $parentActionToCancelTo = $action->getParentActionToCancelTo();
+            $parentActionToCancelTo = $parentActionsToCancel === null ?
+                $action->getParentActionToCancelTo() :
+                (is_string($parentActionsToCancel) ? $parentActionsToCancel : null);
 
             while (true) {
                 $recentlyClosedParentAction = array_pop($this->mountedActions);
