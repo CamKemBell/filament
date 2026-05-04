@@ -739,9 +739,13 @@ trait InteractsWithActions
         ) {
             $this->mountedActions = [];
         } else {
-            $parentActionToCancelTo = $parentActionsToCancel === null ?
-                $action->getParentActionToCancelTo() :
-                (is_string($parentActionsToCancel) ? $parentActionsToCancel : null);
+            if ($parentActionsToCancel === null) {
+                $parentActionToCancelTo = $action->getParentActionToCancelTo();
+            } elseif (is_string($parentActionsToCancel)) {
+                $parentActionToCancelTo = $parentActionsToCancel;
+            } else {
+                $parentActionToCancelTo = null;
+            }
 
             while (true) {
                 $recentlyClosedParentAction = array_pop($this->mountedActions);

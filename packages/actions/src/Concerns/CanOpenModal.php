@@ -147,9 +147,9 @@ trait CanOpenModal
         return $this;
     }
 
-    public function modalDismissesParentActions(bool | string | Closure | null $toAction = true): static
+    public function modalDismissesParentActions(bool | string | Closure | null $parentActionsToCancel = true): static
     {
-        $this->modalDismissesParentActions = $toAction;
+        $this->modalDismissesParentActions = $parentActionsToCancel;
 
         return $this;
     }
@@ -719,19 +719,22 @@ trait CanOpenModal
 
     public function shouldModalDismissParentActions(): bool
     {
-        $cancelParentActions = $this->evaluate($this->modalDismissesParentActions);
-
-        return filled($cancelParentActions);
+        return filled($this->getParentActionsToCancelWhenModalIsDismissed());
     }
 
     public function shouldModalDismissAllParentActions(): bool
     {
-        return $this->evaluate($this->modalDismissesParentActions) === true;
+        return $this->getParentActionsToCancelWhenModalIsDismissed() === true;
+    }
+
+    public function getParentActionsToCancelWhenModalIsDismissed(): bool | string | null
+    {
+        return $this->evaluate($this->modalDismissesParentActions);
     }
 
     public function getParentActionToCancelToWhenModalIsDismissed(): ?string
     {
-        $cancelParentActions = $this->evaluate($this->modalDismissesParentActions);
+        $cancelParentActions = $this->getParentActionsToCancelWhenModalIsDismissed();
 
         return is_string($cancelParentActions) ? $cancelParentActions : null;
     }
