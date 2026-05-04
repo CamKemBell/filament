@@ -719,7 +719,9 @@ trait CanOpenModal
 
     public function shouldModalDismissParentActions(): bool
     {
-        return filled($this->getParentActionsToCancelWhenModalIsDismissed());
+        $parentActionsToCancel = $this->getParentActionsToCancelWhenModalIsDismissed();
+
+        return ($parentActionsToCancel === true) || is_string($parentActionsToCancel);
     }
 
     public function shouldModalDismissAllParentActions(): bool
