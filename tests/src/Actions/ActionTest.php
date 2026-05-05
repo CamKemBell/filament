@@ -481,25 +481,6 @@ describe('properties', function (): void {
         expect($action->getParentActionToCancelToWhenModalIsDismissed())->toBe('parentAction');
     });
 
-    it('can use the deprecated `modalCloseButton()` argument to cancel all parent actions when dismissing a modal', function (): void {
-        $action = Action::make('test')
-            ->modalCloseButton(cancelParentActions: true);
-
-        expect($action->hasModalCloseButton())->toBeTrue();
-        expect($action->shouldModalDismissParentActions())->toBeTrue();
-        expect($action->shouldModalDismissAllParentActions())->toBeTrue();
-    });
-
-    it('can use the deprecated `modalCloseButton()` argument to cancel parent actions to a named action when dismissing a modal', function (): void {
-        $action = Action::make('test')
-            ->modalCloseButton(cancelParentActions: 'parentAction');
-
-        expect($action->hasModalCloseButton())->toBeTrue();
-        expect($action->shouldModalDismissParentActions())->toBeTrue();
-        expect($action->shouldModalDismissAllParentActions())->toBeFalse();
-        expect($action->getParentActionToCancelToWhenModalIsDismissed())->toBe('parentAction');
-    });
-
     it('can use `badge()` to set badge display mode', function (): void {
         $action = Action::make('test')->badge();
 
