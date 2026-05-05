@@ -133,16 +133,9 @@ trait CanOpenModal
         return $this;
     }
 
-    /**
-     * @deprecated Use `modalDismissesParentActions()` instead of the `$cancelParentActions` argument.
-     */
-    public function modalCloseButton(bool | Closure | null $condition = true, bool | string | Closure | null $cancelParentActions = null): static
+    public function modalCloseButton(bool | Closure | null $condition = true): static
     {
         $this->hasModalCloseButton = $condition;
-
-        if ($cancelParentActions !== null) {
-            $this->modalDismissesParentActions($cancelParentActions);
-        }
 
         return $this;
     }
