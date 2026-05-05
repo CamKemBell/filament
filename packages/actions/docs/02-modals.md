@@ -794,8 +794,6 @@ Action::make('createPost')
     })
 ```
 
-Passing the `cancelParentActions` argument to `modalCloseButton()` is deprecated. Use `modalDismissesParentActions()` instead.
-
 If you'd like to hide the close button for all modals in the application, you can do so by calling `ModalComponent::closeButton(false)` inside a service provider or middleware:
 
 ```php
